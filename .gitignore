@@ -1,0 +1,25 @@
+# === СЕКРЕТЫ И НАСТРОЙКИ (КРИТИЧЕСКИ ВАЖНО ИГНОРИРОВАТЬ) ===
+.env
+.env.*
+*.local
+credentials.json
+*.token
+*.key
+
+# === PYTHON (ИГНОРИРУЕМ КЭШ И ВИРТУАЛЬНЫЕ ОКРУЖЕНИЯ) ===
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.pydantic_cache/
+.venv/
+venv/
+ENV/
+env/
+
+# === СИСТЕМНЫЕ ФАЙЛЫ И МУСОР ===
+.DS_Store
+Thumbs.db
+*.log
+
+translations_cache
