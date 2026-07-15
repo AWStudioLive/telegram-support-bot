@@ -1,6 +1,5 @@
-# Project: Titan Cloud Tech (Support Bot API)
+# Project: Telegram Support Bot
 # Path: core/utils/settings.py
-# Compliance: PROJECT_DNA_V6.5 (Pydantic-Based Config)
 
 from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -15,13 +14,18 @@ class Settings(BaseSettings):
     )
 
     # --- [ TELEGRAM SUPPORT BOT ] ---
-    TG_SUPPORT_BOT_NAME: str
+    TG_SUPPORT_BOT_NAME: str  = "SupportBot"  # Имя бота поддержки (без @)
     TG_SUPPORT_BOT_TOKEN: str
 
     # --- [ TELEGRAM ADMIN GROUP & TOPICS ] ---
     TG_ADMIN_GROUP_ID: int     # ID группы (начинается с -100)
     TG_TOPIC_SUPPORT_ID: int   # ID темы "Саппорт"
-    TG_TOPIC_LOGS_ID: int      # ID темы "Логи / Ошибки" (бывший General)
+    TG_TOPIC_LOGS_ID: int | None = None  # ID темы "Логи / Ошибки"
+    
+    # --- [ LOCALIZATION & TRANSLATION ] ---
+    # Целевой язык, на который бот переводит сообщения клиентов для админов.
+    # По умолчанию — английский ('en'). Можно переопределить в .env на любой другой (например, 'ru').
+    DEFAULT_TRANSLATION_LANG: str = "en"
 
     # --- [ VALIDATION ] ---
     @field_validator("TG_SUPPORT_BOT_TOKEN", mode="before")

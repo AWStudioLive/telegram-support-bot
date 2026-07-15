@@ -1,11 +1,11 @@
-# Project: Titan Cloud Tech (Backend API)
+# Project: Telegram Support Bot
 # Path: core/utils/logger.py
 
 import logging
 import sys
-import re
+import os
 
-class TitanColorFormatter(logging.Formatter):
+class ColorFormatter(logging.Formatter):
     """Кастомный форматер для КОНСОЛИ (с изолированной окраской текста уровня лога)"""
     
     COLORS = {
@@ -32,8 +32,38 @@ class TitanColorFormatter(logging.Formatter):
         return formatter.format(record)
 
 
+class CustomLogger(logging.Logger):
+    """
+    Кастомный логгер, который правильно определяет реальное место вызова лога.
+    Пропускает файл-фасад system_logger.py, возвращая имя файла и строку хэндлера.
+    """
+    def findCaller(self, stack_info=False, stacklevel=1):
+        f = logging.currentframe()
+        if f is not None:
+            f = f.f_back
+        
+        rv = "(unknown file)", 0, "(unknown function)", None
+        
+        while hasattr(f, "f_code"):
+            co = f.f_code
+            filename = os.path.normcase(co.co_filename)
+            
+            # Если лог пришел из нашего фасада, спускаемся по стеку глубже
+            if filename == logging._srcfile or "system_logger.py" in filename:
+                f = f.f_back
+                continue
+            
+            rv = (co.co_filename, f.f_lineno, co.co_name, None)
+            break
+            
+        return rv
+
+
 def get_logger(name: str = "") -> logging.Logger:
     """Создает настроенный логгер с выводом СТРОГО в консоль Docker."""
+    # Регистрируем наш класс, чтобы логгер использовал именно его
+    logging.setLoggerClass(CustomLogger)
+    
     logger = logging.getLogger(name)
     logger.setLevel(logging.DEBUG)
 
@@ -44,7 +74,7 @@ def get_logger(name: str = "") -> logging.Logger:
         # Оставляем ТОЛЬКО консольный обработчик. 
         # Docker сам всё запишет в файлы на сервере и сделает ротацию!
         console_handler = logging.StreamHandler(sys.stdout)
-        console_handler.setFormatter(TitanColorFormatter())
+        console_handler.setFormatter(ColorFormatter())
         console_handler.setLevel(logging.INFO)  
         
         logger.addHandler(console_handler)

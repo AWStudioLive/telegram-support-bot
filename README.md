@@ -1,76 +1,78 @@
 # Telegram Support Bot 🤖
 
-Асинхронный Telegram-бот для автоматизации технической поддержки клиентов. 
+🌐 **Read this in other languages:** [Русский](#telegram-support-bot-ru)
 
-Бот выступает в роли моста между клиентом и администрацией: пересылает текстовые обращения, скриншоты и лог-файлы в специальный топик админ-группы, позволяя операторам отвечать пользователям напрямую через встроенный функционал Telegram (Reply/Callback)[cite: 1, 2].
+An asynchronous Telegram bot designed to automate customer technical support.
 
-## 🛠 Стек технологий
-* **Язык:** Python 3.14 (Slim-образ в Docker)[cite: 5]
-* **Библиотека Telegram API:** aiogram 3.x (Асинхронная разработка)[cite: 6]
-* **Валидация конфигурации:** Pydantic-Settings v2 (строгая проверка переменных окружения)[cite: 4]
-* **Логирование:** Кастомный `StreamHandler` с цветовой разметкой уровней для удобного дебага в консоли Docker[cite: 3]
-* **Инфраструктура:** Docker / Docker Compose[cite: 5]
+The bot acts as a bridge between the customer and the administration: it forwards text inquiries, screenshots, and log files to a dedicated topic within the admin group, allowing operators to reply to users directly using Telegram's built-in functionality (Reply/Callback).
 
-## 🚀 Ключевые архитектурные решения
-* **Разделение бизнес-логики:** Маршрутизация событий разделена на независимые роутеры (`client_router` и `admin_router`)[cite: 6].
-* **Универсальная обработка медиа:** Бот корректно обрабатывает и пересылает как обычный текст, так и файлы конфигурации, скриншоты или логи, сохраняя привязку к ID пользователя[cite: 1, 2].
-* **Система "Взятия в работу":** Реализована блокировка тикетов через Callback-кнопки для предотвращения дублирования ответов разными администраторами[cite: 1].
-* **Интеграция с Telegram Topics:** Поддержка распределения входящих тикетов по конкретным топикам внутри админ-группы[cite: 1, 2].
+## 🛠 Tech Stack
+* **Language:** Python 3.14 (Slim image in Docker)
+* **Telegram API Library:** aiogram 3.x (Asynchronous development)
+* **Configuration Validation:** Pydantic-Settings v2 (strict environment variables validation)
+* **Logging:** Custom `StreamHandler` with color-coded levels for convenient debugging in the Docker console
+* **Infrastructure:** Docker / Docker Compose
 
----
-
-## 📦 Инструкция по запуску
-
-### Шаг 1: Подготовка инфраструктуры в Telegram
-
-Перед запуском кода необходимо настроить окружение в самом Telegram:
-
-1. **Создайте бота:**
-   * Напишите официальному боту `@BotFather` и создайте нового бота через команду `/newbot`.
-   * Сохраните полученный токен (`TG_SUPPORT_BOT_TOKEN`)[cite: 4].
-
-2. **Создайте группу для администрации (админку):**
-   * Создайте **публичную** или **приватную группу** в Telegram, куда будут входить ваши операторы поддержки.
-   * Добавьте вашего созданного бота в эту группу и **дайте ему права администратора** (они необходимы боту для редактирования сообщений и обновления статусов тикетов)[cite: 1].
-   * В настройках группы обязательно включите тумблер **Темы (Topics)**.
-
-3. **Создайте необходимые топики (темы):**
-   * Зайдите в созданную группу и создайте в ней два топика:
-     * Топик для входящих обращений (например, назвав его `"Support"`).
-     * Топик для системных логов (например, назвав его `"Логи / Ошибки"`).
-   * Узнайте ID группы (`TG_ADMIN_GROUP_ID`) и ID созданных топиков (`TG_TOPIC_SUPPORT_ID` и `TG_TOPIC_LOGS_ID`) для конфигурации `.env`[cite: 4].
-
-4. **Настройте файл конфигурации:**
-   * Создайте файл `.env` в корне проекта на основе [.env.example](./.env.example) и заполните все полученные ID и токены[cite: 4].
+## 🚀 Key Architectural Decisions
+* **Separation of Business Logic:** Event routing is divided into independent routers (`client_router` and `admin_router`).
+* **Universal Media Handling:** The bot correctly processes and forwards regular text, configuration files, screenshots, or logs, while preserving the user's ID mapping.
+* **"Claim Ticket" System:** Ticket locking via Callback buttons is implemented to prevent multiple administrators from sending duplicate responses.
+* **Telegram Topics Integration:** Supports distributing incoming tickets into specific topics inside the admin group.
 
 ---
 
-### Шаг 2: Варианты запуска бота
+## 📦 Deployment Guide
 
-Выберите наиболее удобный для вас вариант развертывания системы:
+### Step 1: Setting up Telegram Infrastructure
 
-#### Вариант А: Запуск из готового образа (Docker Hub)
-Самый быстрый способ развернуть бота без скачивания исходного кода. Создайте локально файл `.env` с вашими токенами и выполните:
+Before running the code, you need to set up the environment in Telegram:
 
-```
-# 1. Скачать готовый образ
+1. **Create a bot:**
+   * Message the official `@BotFather` bot and create a new bot using the `/newbot` command.
+   * Save the received token (`TG_SUPPORT_BOT_TOKEN`).
+
+2. **Create an administrator group (admin panel):**
+   * Create a **public** or **private group** in Telegram that your support operators will join.
+   * Add your newly created bot to this group and **grant it administrator privileges** (needed for editing messages and updating ticket statuses).
+   * Make sure to enable the **Topics** toggle in the group settings.
+
+3. **Create the required topics:**
+   * Open the created group and create two topics:
+     * A topic for incoming tickets (e.g., named `"Support"`).
+     * A topic for system logs (e.g., named `"Logs / Errors"`).
+   * Retrieve the group ID (`TG_ADMIN_GROUP_ID`) and the IDs of the created topics (`TG_TOPIC_SUPPORT_ID` and `TG_TOPIC_LOGS_ID`) for the `.env` configuration.
+
+4. **Configure the environment file:**
+   * Create a `.env` file in the root directory based on [.env.example](./.env.example) and fill in all the retrieved IDs and tokens.
+
+---
+
+### Step 2: Deployment Options
+
+Choose the most convenient deployment option for your environment:
+
+#### Option A: Running from a Pre-built Image (Docker Hub)
+The fastest way to deploy the bot without downloading the source code. Create a local `.env` file with your tokens and run:
+
+```bash
+# 1. Pull the pre-built image
 docker pull awstudiodev/titan-cloud-support-bot:latest
 
-# 2. Запустить контейнер (передав локальный файл настроек .env)
+# 2. Run the container (passing the local .env configuration file)
 docker run -d --name telegram-support-bot --env-file .env awstudiodev/titan-cloud-support-bot:latest
 ```
 
-#### Вариант Б: Запуск из исходного кода (Для разработки)
-Если вы хотите доработать бота под себя или запустить его локально:
+#### Option B: Running from Source Code (For Development)
+If you want to customize the bot or run it locally:
 
-```
-# 1. Клонируйте репозиторий
-git clone [https://github.com/AWStudioLive/telegram-support-bot.git](https://github.com/AWStudioLive/telegram-support-bot.git)
+```bash
+# 1. Clone the repository (replace with your repository URL)
+git clone <your_repository_url>
 cd telegram-support-bot
 
-# 2. Скопируйте шаблон настроек и заполните его своими токенами
+# 2. Copy the configuration template and fill in your tokens
 cp .env.example .env
 
-# 3. Соберите и запустите проект локально
+# 3. Build and launch the project locally
 docker compose up -d --build
 ```
