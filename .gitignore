@@ -1,6 +1,7 @@
 # === СЕКРЕТЫ И НАСТРОЙКИ (КРИТИЧЕСКИ ВАЖНО ИГНОРИРОВАТЬ) ===
 .env
 .env.*
+!.env.example
 *.local
 credentials.json
 *.token

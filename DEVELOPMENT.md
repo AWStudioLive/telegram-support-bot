@@ -8,13 +8,11 @@
 
 Используйте данные команды для фиксации новых библиотек при добавлении их в проект внутри виртуального окружения (venv):
 
-```
 # Сохранить установленные пакеты из venv в файл зависимостей
 pip freeze > requirements.txt
 
 # Установить все зависимости из файла требований локально
 pip install -r requirements.txt
-```
 
 ---
 
@@ -22,13 +20,11 @@ pip install -r requirements.txt
 
 Основные команды для обслуживания работающего контейнера на удаленном сервере:
 
-```
 # Пересобрать образы и перезапустить проект в фоновом режиме (демон)
 docker compose up -d --build
 
 # Просмотр логов бота на сервере в реальном времени (выйти: Ctrl+C)
 docker logs telegram-support-bot -f
-```
 
 ---
 
@@ -36,7 +32,6 @@ docker logs telegram-support-bot -f
 
 Используйте эти команды, чтобы протестировать сборку контейнера локально перед отправкой изменений в репозиторий:
 
-```
 # Пересобрать Docker-образ с нуля (игнорируя кэш слоев)
 docker build --no-cache . -t telegram-support-bot
 
@@ -45,7 +40,6 @@ docker run --rm telegram-support-bot pip list
 
 # Запустить контейнер локально в интерактивном режиме (остановка через Ctrl+C)
 docker run --rm --name telegram-support-bot telegram-support-bot
-```
 
 ---
 
@@ -53,15 +47,19 @@ docker run --rm --name telegram-support-bot telegram-support-bot
 
 Флоу сборки и отправки готового образа в Docker Hub для последующего деплоя на серверах:
 
-```
 # 1. Авторизоваться в реестре Docker Hub через консоль
 docker login
 
 # 2. Привязать локальный образ к удаленному репозиторию (тегируем конкретную версию и latest)
-docker tag telegram-support-bot awstudiodev/telegram-support-bot:1.0.0
-docker tag telegram-support-bot awstudiodev/telegram-support-bot:latest
+# Сборка под тегом 1.0.0
+docker tag telegram-support-bot awstudiodev/titan-cloud-support-bot:1.0.0
+
+# Сборка под latest
+docker tag telegram-support-bot awstudiodev/titan-cloud-support-bot:latest
 
 # 3. Отправить подготовленные версии в Docker Hub
-docker push awstudiodev/telegram-support-bot:1.0.0
-docker push awstudiodev/telegram-support-bot:latest
-```
+# Пушим версию 1.0.0
+docker push awstudiodev/titan-cloud-support-bot:1.0.0
+
+# Пушим и обновляем latest
+docker push awstudiodev/titan-cloud-support-bot:latest
